@@ -163,8 +163,8 @@ function applyVariant(variant, matches, context) {
 
       let container = postcss.root({ nodes: [rule.clone()] })
 
-      for (let [variantSort, variantFunction] of variantFunctionTuples) {
-        let clone = container.clone()
+      for (let [variantSort, variantFunction, containerFromArray] of variantFunctionTuples) {
+        let clone = containerFromArray ?? container.clone()
         let collectedFormats = []
 
         function prepareBackup() {
@@ -233,6 +233,10 @@ function applyVariant(variant, matches, context) {
               // reserving additional X places for these 'unknown' variants in between.
               variantSort | BigInt(idx << ruleWithVariant.length),
               variantFunction,
+
+              // If the clone has been modified we have to pass that back
+              // though so each rule can use the modified container
+              clone.clone(),
             ])
           }
           continue
